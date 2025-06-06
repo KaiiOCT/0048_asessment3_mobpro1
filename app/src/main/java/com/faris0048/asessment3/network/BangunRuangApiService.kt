@@ -13,6 +13,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -43,7 +44,16 @@ interface BangunRuangApiService {
         @Part gambar: MultipartBody.Part
     ): OpStatus
 
-    @DELETE("bangun-ruang/{id}")
+    @Multipart
+    @POST("bangun-ruang/edit/{id}")
+    suspend fun editBangunRuang(
+        @Header("Authorization") userId: String,
+        @Path("id") id: String,
+        @Part("nama") nama: RequestBody,
+        @Part gambar: MultipartBody.Part
+    ): OpStatus
+
+    @DELETE("bangun-ruang/delete/{id}")
     suspend fun deleteBangunRuang(
         @Header("Authorization") userId: String,
         @Path("id") id: String

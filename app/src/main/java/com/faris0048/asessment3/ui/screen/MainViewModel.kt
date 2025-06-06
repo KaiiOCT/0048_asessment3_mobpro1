@@ -45,7 +45,27 @@ class MainViewModel : ViewModel() {
             try {
                 val result = BangunRuangApi.service.postBangunRuang(
                     userId,
-                    nama.toRequestBody( "text/plain".toMediaTypeOrNull()),
+                    nama.toRequestBody("text/plain".toMediaTypeOrNull()),
+                    bitmap.toMultipartBody()
+                )
+
+                if(result.status == "success")
+                    retriveData(userId)
+                else
+                    throw Exception(result.message)
+            } catch (e: Exception) {
+                Log.d("MainViewModel", "Failure: ${e.message}")
+            }
+        }
+    }
+
+    fun updateData(userId: String, bangunRuangId: String, nama: String, bitmap: Bitmap) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val result = BangunRuangApi.service.editBangunRuang(
+                    userId,
+                    bangunRuangId,
+                    nama.toRequestBody("text/plain".toMediaTypeOrNull()),
                     bitmap.toMultipartBody()
                 )
 

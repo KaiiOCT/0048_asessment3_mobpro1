@@ -11,6 +11,11 @@
     <string name="batal">Batal</string>
     <string name="simpan">Simpan</string>
     <string name="hapus">Hapus</string>
+    <string name="edit">Edit</string>
     <string name="konfirmasi_hapus">Konfirmasi Hapus</string>
     <string name="dialog_hapus">Apakah Anda yakin ingin menghapus bangun ruang ini?</string>
+    <string name="pilih_gambar">Pilih Gambar</string>
+    <string name="pilih_sumber_gambar">Pilih sumber gambar</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
 </resources>

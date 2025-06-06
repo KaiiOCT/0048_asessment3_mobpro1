@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
@@ -15,10 +16,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -26,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -196,9 +201,20 @@ fun ScreenContent(viewModel: MainViewModel, userId: String, modifier: Modifier =
                     .padding(4.dp),
                 columns = GridCells.Fixed(2),
             ) {
-                items(data) { ListItem(bangunRuang =  it, userId = userId, onDelete = {id ->
-                    viewModel.deleteData(userId, id)
-                }) }
+                items(data) {
+                    ListItem(
+                        bangunRuang = it,
+                        userId = userId,
+                        onDelete = { id ->
+                            viewModel.deleteData(userId, id)
+                        },
+                        onEdit = { id, nama, bitmap ->
+                            if (bitmap != null) {
+                                viewModel.updateData(userId, id, nama, bitmap)
+                            }
+                        }
+                    )
+                }
             }
         }
 
@@ -222,8 +238,15 @@ fun ScreenContent(viewModel: MainViewModel, userId: String, modifier: Modifier =
 }
 
 @Composable
-fun ListItem(bangunRuang: BangunRuang, userId: String, onDelete: (String) -> Unit) {
+fun ListItem(
+    bangunRuang: BangunRuang,
+    userId: String,
+    onDelete: (String) -> Unit,
+    onEdit: (String, String, Bitmap?) -> Unit
+) {
     var showDialogDelete by remember { mutableStateOf(false) }
+    var showDialogEdit by remember { mutableStateOf(false) }
+    var currentBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
     Box(
         modifier = Modifier
@@ -243,7 +266,14 @@ fun ListItem(bangunRuang: BangunRuang, userId: String, onDelete: (String) -> Uni
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp)
-                .height(180.dp)
+                .height(180.dp),
+            onSuccess = { result ->
+                // Convert drawable to bitmap for edit dialog
+                val drawable = result.result.drawable
+                if (drawable is BitmapDrawable) {
+                    currentBitmap = drawable.bitmap
+                }
+            }
         )
         Column(
             modifier = Modifier
@@ -258,19 +288,44 @@ fun ListItem(bangunRuang: BangunRuang, userId: String, onDelete: (String) -> Uni
                 color = Color.White
             )
         }
+
         if(bangunRuang.mine == 1){
-            IconButton(
-                onClick = { showDialogDelete = true },
-                modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp).background(Color(0f, 0f, 0f, 0.5f), shape = CircleShape)
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(8.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = stringResource(R.string.hapus),
-                    tint = Color.White
-                )
+                // Edit Button
+                IconButton(
+                    onClick = { showDialogEdit = true },
+                    modifier = Modifier
+                        .background(Color(0f, 0f, 0f, 0.5f), shape = CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit",
+                        tint = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                // Delete Button
+                IconButton(
+                    onClick = { showDialogDelete = true },
+                    modifier = Modifier
+                        .background(Color(0f, 0f, 0f, 0.5f), shape = CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.hapus),
+                        tint = Color.White
+                    )
+                }
             }
         }
 
+        // Delete Dialog
         if(showDialogDelete){
             AlertDialog(
                 onDismissRequest = { showDialogDelete = false },
@@ -288,6 +343,19 @@ fun ListItem(bangunRuang: BangunRuang, userId: String, onDelete: (String) -> Uni
                     Button(onClick = { showDialogDelete = false }) {
                         Text(text = stringResource(R.string.batal))
                     }
+                }
+            )
+        }
+
+        // Edit Dialog
+        if(showDialogEdit){
+            EditBangunRuangDialog(
+                initialNama = bangunRuang.nama,
+                initialBitmap = currentBitmap,
+                onDismissRequest = { showDialogEdit = false },
+                onConfirmation = { nama, bitmap ->
+                    showDialogEdit = false
+                    onEdit(bangunRuang.id, nama, bitmap)
                 }
             )
         }
