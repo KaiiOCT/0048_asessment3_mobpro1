@@ -6,12 +6,11 @@
     <string name="profil">Profil</string>
     <string name="tutup">Tutup</string>
     <string name="logout">Logout</string>
-    <string name="tambah_hewan">Tambah hewan</string>
+    <string name="tambah_bangun_ruang">Tambah bangun ruang</string>
     <string name="nama">Nama</string>
-    <string name="nama_latin">Nama latin</string>
     <string name="batal">Batal</string>
     <string name="simpan">Simpan</string>
     <string name="hapus">Hapus</string>
     <string name="konfirmasi_hapus">Konfirmasi Hapus</string>
-    <string name="dialog_hapus">Apakah Anda yakin ingin menghapus hewan ini?</string>
+    <string name="dialog_hapus">Apakah Anda yakin ingin menghapus bangun ruang ini?</string>
 </resources>
