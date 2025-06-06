@@ -22,8 +22,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -193,7 +196,9 @@ fun ScreenContent(viewModel: MainViewModel, userId: String, modifier: Modifier =
                     .padding(4.dp),
                 columns = GridCells.Fixed(2),
             ) {
-                items(data) { ListItem(bangunRuang =  it) }
+                items(data) { ListItem(bangunRuang =  it, userId = userId, onDelete = {id ->
+                    viewModel.deleteData(userId, id)
+                }) }
             }
         }
 
@@ -217,7 +222,9 @@ fun ScreenContent(viewModel: MainViewModel, userId: String, modifier: Modifier =
 }
 
 @Composable
-fun ListItem(bangunRuang: BangunRuang) {
+fun ListItem(bangunRuang: BangunRuang, userId: String, onDelete: (String) -> Unit) {
+    var showDialogDelete by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .padding(4.dp)
@@ -249,6 +256,39 @@ fun ListItem(bangunRuang: BangunRuang) {
                 text = bangunRuang.nama,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
+            )
+        }
+        if(bangunRuang.mine == 1){
+            IconButton(
+                onClick = { showDialogDelete = true },
+                modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp).background(Color(0f, 0f, 0f, 0.5f), shape = CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.hapus),
+                    tint = Color.White
+                )
+            }
+        }
+
+        if(showDialogDelete){
+            AlertDialog(
+                onDismissRequest = { showDialogDelete = false },
+                title = { Text(text = stringResource(R.string.konfirmasi_hapus)) },
+                text = { Text(text = stringResource(R.string.dialog_hapus)) },
+                confirmButton = {
+                    Button(onClick = {
+                        showDialogDelete = false
+                        onDelete(bangunRuang.id)
+                    }) {
+                        Text(text = stringResource(R.string.hapus))
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { showDialogDelete = false }) {
+                        Text(text = stringResource(R.string.batal))
+                    }
+                }
             )
         }
     }
