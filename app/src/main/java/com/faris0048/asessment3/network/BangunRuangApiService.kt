@@ -13,13 +13,11 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
-import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 
-private const val BASE_URL = "https://true-meet-jaguar.ngrok-free.app/api/"
+private const val BASE_URL = "https://mobpro-api-production.up.railway.app/api/"
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
@@ -66,7 +64,7 @@ object BangunRuangApi {
     }
 
     fun getBangunRuang(url: String): String {
-        return "https://true-meet-jaguar.ngrok-free.app/storage/$url"
+        return "https://mobpro-api-production.up.railway.app/storage/$url"
     }
 }
 
