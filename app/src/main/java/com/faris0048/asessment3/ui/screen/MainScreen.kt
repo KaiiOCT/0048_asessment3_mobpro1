@@ -200,6 +200,7 @@ fun ScreenContent(viewModel: MainViewModel, userId: String, modifier: Modifier =
                     .fillMaxSize()
                     .padding(4.dp),
                 columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(bottom = 80.dp)
             ) {
                 items(data) {
                     ListItem(
@@ -268,7 +269,6 @@ fun ListItem(
                 .padding(4.dp)
                 .height(180.dp),
             onSuccess = { result ->
-                // Convert drawable to bitmap for edit dialog
                 val drawable = result.result.drawable
                 if (drawable is BitmapDrawable) {
                     currentBitmap = drawable.bitmap
